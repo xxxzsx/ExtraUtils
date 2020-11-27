@@ -105,6 +105,11 @@ Object.defineProperty(Array.prototype, 'last', {
 /************************************************/
 
 
+// Split string keeping end after limit.
+String.prototype.splitKeep = function(splitter, limit) {
+    return [...this.split(splitter, limit - 1), this.split(splitter).slice(limit - 1).join(splitter)]
+}
+
 // Get escaped char.
 String.prototype.escapeCharAt = function (index = 0) {
     const hex = this.charCodeAt(index).toString(16)
