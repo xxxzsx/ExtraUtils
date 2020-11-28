@@ -85,18 +85,10 @@ Object.prototype.inbuild = function (target = Object.getPrototypeOf(this.getClas
 /************************************************/
 
 
-/*
- * Array.last getter and setter.
- *
- * [6, 7, 8].last++ or do anything you want.
- */
+// Array.last property.
 Object.defineProperty(Array.prototype, 'last', {
-    get() {
-        return this[this.length - 1]
-    },
-    set(value) {
-        return this[this.length - 1] = value
-    }
+    get() { return this[this.length - 1] },
+    set(value) { return this[this.length - 1] = value }
 })
 
 
@@ -105,9 +97,10 @@ Object.defineProperty(Array.prototype, 'last', {
 /************************************************/
 
 
-// Split string keeping end after limit.
-String.prototype.splitKeep = function(splitter, limit) {
-    return [...this.split(splitter, limit - 1), this.split(splitter).slice(limit - 1).join(splitter)]
+// Split string keeping end after limit in the last element if keep = true.
+String.prototype._split = String.prototype.split
+String.prototype.split = function(splitter, limit, keep = false) {
+    return keep ? [...this._split(splitter, limit - 1), this._split(splitter).slice(limit - 1).join(splitter)] : this._split(...arguments)
 }
 
 // Get escaped char.
@@ -166,11 +159,10 @@ String.prototype.unescape = function (needle = '', except = true) {
     )
 }
 
-if (!String.prototype.hasOwnProperty('replaceAll')) {
-    // Replace all matches in a string.
-    String.prototype.replaceAll = function (needle, replacer) {
-        return this.replace(RegExp(needle.escape(), 'gm'), replacer)
-    }
+// Replace all matches in a string.
+String.prototype.hasOwnProperty('replaceAll') ||
+String.prototype.replaceAll = function (needle, replacer) {
+    return this.replace(RegExp(needle.escape(), 'gm'), replacer)
 }
 
 /*
