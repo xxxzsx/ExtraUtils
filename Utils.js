@@ -216,3 +216,34 @@ Number.prototype.before = function* (end, step = 1) {
     if (this >= end) return
     for (let i = +this; i < end; i += step) yield i
 }
+
+
+/************************************************/
+/*                 Promise utils                */
+/************************************************/
+
+
+// Check promise state (Node.js internal undocumented API)
+Promise.prototype.getState = function() {
+    return ['pending', 'resolved', 'rejected'][process.binding('util').getPromiseDetails(this)[0]]
+}
+
+// Check promise state (Node.js internal undocumented API)
+Promise.prototype.isPending = function() {
+    return process.binding('util').getPromiseDetails(this)[0] === 0
+}
+
+// Check promise state (Node.js internal undocumented API)
+Promise.prototype.isResolved = function() {
+    return process.binding('util').getPromiseDetails(this)[0] === 1
+}
+
+// Check promise state (Node.js internal undocumented API)
+Promise.prototype.isRejected = function() {
+    return process.binding('util').getPromiseDetails(this)[0] === 2
+}
+
+// Check promise state (Node.js internal undocumented API)
+Promise.prototype.isFulfilled = function() {
+    return process.binding('util').getPromiseDetails(this)[0] !== 0
+}
