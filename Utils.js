@@ -33,6 +33,11 @@ Object.prototype.getClass = function () {
         this.constructor // is an instance
 }
 
+// Get object parent class.
+Object.prototype.getParent = function () {
+    return Object.getPrototypeOf(this.getClass())
+}
+
 // Universal way to get all class or object class static methods.
 Object.prototype.getStaticMethods = function () {
     const objectClass = this.getClass()
@@ -73,7 +78,7 @@ Object.prototype.addAttributes = function (attributes, rewrite = false) {
  *
  * Add all methods and attributes of one class into another; into parent by default.
  */
-Object.prototype.inbuild = function (target = Object.getPrototypeOf(this.getClass())) {
+Object.prototype.inbuild = function (target = this.getParent()) {
     target.addStaticMethods(this.getStaticMethods())
     target.addNonStaticMethods(this.getNonStaticMethods())
     target.addAttributes(this.getAttributes())
@@ -91,6 +96,41 @@ Object.defineProperty(Array.prototype, 'last', {
     set(value) { return this[this.length - 1] = value }
 })
 
+const TypedArray = Uint8Array.getParent()
+
+// Check if TypedArray starts with provided bytes.
+TypedArray.prototype.startsWith = function (starts) {
+    if (starts.prototype !== this.prototype)
+        starts = new this.constructor(starts.buffer)
+    if (starts.length > this.length)
+        return false
+
+    return starts.every((v, k) => v === this[k])
+}
+
+// Concatenate TypedArrays.
+TypedArray.prototype.concat = function (...arrays) {
+    arrays = arrays.map(a => a.prototype !== this.prototype ?
+        new Uint8Array(a.buffer) : a)
+    arrays.unshift(this)
+
+    const totalLength = arrays.reduce((l, a) => l + a.length, 0)
+    const newArray = new this.constructor(totalLength)
+
+    let offset = 0
+    for (const array of arrays) {
+        newArray.set(array, offset)
+        offset += array.length
+    }
+    return newArray
+}
+
+// Concatenate buffers.
+ArrayBuffer.prototype.concat = function(...buffers) {
+    const arrays = buffers.map(a => new Uint8Array(a))
+    return (new Uint8Array(this)).concat(...arrays).buffer
+}
+
 
 /************************************************/
 /*                 String utils                 */
@@ -99,7 +139,7 @@ Object.defineProperty(Array.prototype, 'last', {
 
 // Split string keeping end after limit in the last element if keep = true.
 String.prototype._split = String.prototype.split
-String.prototype.split = function(splitter, limit, keep = false) {
+String.prototype.split = function (splitter, limit, keep = false) {
     return keep ? [...this._split(splitter, limit - 1), this._split(splitter).slice(limit - 1).join(splitter)] : this._split(...arguments)
 }
 
