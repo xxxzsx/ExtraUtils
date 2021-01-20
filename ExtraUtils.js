@@ -200,9 +200,10 @@ String.prototype.unescape = function (needle = '', except = true) {
 }
 
 // Replace all matches in a string.
-String.prototype.hasOwnProperty('replaceAll') ||
-String.prototype.replaceAll = function (needle, replacer) {
-    return this.replace(RegExp(needle.escape(), 'gm'), replacer)
+if (!String.prototype.hasOwnProperty('replaceAll')) {
+    String.prototype.replaceAll = function (needle, replacer) {
+        return this.replace(RegExp(needle.escape(), 'gm'), replacer)
+    }
 }
 
 /*
@@ -255,6 +256,12 @@ Number.prototype.till = function* (end, step = 1) {
 Number.prototype.before = function* (end, step = 1) {
     if (this >= end) return
     for (let i = +this; i < end; i += step) yield i
+}
+
+// Get number length.
+// Same as N.toString(base).length
+Number.prototype.length = function(base = 10) {
+    return Math.ceil(Math.log(this) / Math.log(base))
 }
 
 
