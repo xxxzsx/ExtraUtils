@@ -74,14 +74,24 @@ Object.prototype.addAttributes = function (attributes, rewrite = false) {
 }
 
 /*
- * Class.inbuild(?TargetClass = Class.super) :: Class -> void
+ * Class.inject(TargetClass = Class.super :: Class|Object, rewrite = false :: Boolean) :: Class -> void
  *
  * Add all methods and attributes of one class into another; into parent by default.
+ * 
+ * Usage:
+ *
+ *   class SuperDuperPatch extends UnfortunateClass {
+ *       additionalMethod() { ... }
+ *       alreadyExistMethod() { ... }
+ *   }
+ *
+ *   SuperDuperPatch.inject(, true) // Patches and rewrites whole class
+ *   SuperDuperPatch.inject(unfortunateInstance, true) // Patches only object
  */
-Object.prototype.inbuild = function (target = this.getParent()) {
-    target.addStaticMethods(this.getStaticMethods())
-    target.addNonStaticMethods(this.getNonStaticMethods())
-    target.addAttributes(this.getAttributes())
+Object.prototype.inject = function (target = this.getParent(), rewrite = false) {
+    target.addStaticMethods(this.getStaticMethods(), rewrite)
+    target.addNonStaticMethods(this.getNonStaticMethods(), rewrite)
+    target.addAttributes(this.getAttributes(), rewrite)
 }
 
 
