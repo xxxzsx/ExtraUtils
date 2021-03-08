@@ -136,7 +136,7 @@ TypedArray.prototype.concat = function (...arrays) {
 }
 
 // Concatenate buffers.
-ArrayBuffer.prototype.concat = function(...buffers) {
+ArrayBuffer.prototype.concat = function (...buffers) {
     const arrays = buffers.map(a => new Uint8Array(a))
     return (new Uint8Array(this)).concat(...arrays).buffer
 }
@@ -270,7 +270,7 @@ Number.prototype.before = function* (end, step = 1) {
 
 // Get number length.
 // Same as N.toString(base).length
-Number.prototype.length = function(base = 10) {
+Number.prototype.length = function (base = 10) {
     return Math.ceil(Math.log(this) / Math.log(base))
 }
 
@@ -281,26 +281,26 @@ Number.prototype.length = function(base = 10) {
 
 
 // Check promise state (Node.js internal undocumented API)
-Promise.prototype.getState = function() {
+Promise.prototype.getState = function () {
     return ['pending', 'resolved', 'rejected'][process.binding('util').getPromiseDetails(this)[0]]
 }
 
 // Check promise state (Node.js internal undocumented API)
-Promise.prototype.isPending = function() {
+Promise.prototype.isPending = function () {
     return process.binding('util').getPromiseDetails(this)[0] === 0
 }
 
 // Check promise state (Node.js internal undocumented API)
-Promise.prototype.isResolved = function() {
+Promise.prototype.isResolved = function () {
     return process.binding('util').getPromiseDetails(this)[0] === 1
 }
 
 // Check promise state (Node.js internal undocumented API)
-Promise.prototype.isRejected = function() {
+Promise.prototype.isRejected = function () {
     return process.binding('util').getPromiseDetails(this)[0] === 2
 }
 
 // Check promise state (Node.js internal undocumented API)
-Promise.prototype.isFulfilled = function() {
+Promise.prototype.isFulfilled = function () {
     return process.binding('util').getPromiseDetails(this)[0] !== 0
 }
