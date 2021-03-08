@@ -73,6 +73,11 @@ Object.prototype.addAttributes = function (attributes, rewrite = false) {
     objectClass.prototype.addProperties(attributes, rewrite)
 }
 
+// Map for Object
+Object.prototype.map = function (callback) {
+    return Object.fromEntries(Object.entries(this).map(v => [v[0], callback(v[1], v[0])]))
+}
+
 /*
  * Class.inject(TargetClass = Class.super :: Class|Object, rewrite = false :: Boolean) :: Class -> void
  *
