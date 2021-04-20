@@ -101,7 +101,9 @@ Object.prototype.inject = function (target = this.getParent(), rewrite = false) 
 
 // Watch and log all object properties access.
 function Watch(proxified, fullpath) {
-    if (typeof __watched !== 'undefined')
+    if (!(property && typeof property === "object" || typeof property === "function"))
+        return proxified;
+    if (typeof proxified.__watched !== 'undefined')
         return proxified;
     proxified.__watched = true;
 
@@ -123,9 +125,8 @@ function Watch(proxified, fullpath) {
         },
     };
 
-    for (let [propertyName, property] of Object.entries(proxified.getOwnProperties(['length', 'prototype', 'name', 'arguments', 'caller']))) {
-        if (property && typeof property === "object" || typeof property === "function")
-            proxified[propertyName] = Watch(property, fullpath + "." + propertyName);
+    for (let [propertyName, property] of Object.entries(proxified.getOwnProperties(['length', 'prototype', 'name', 'arguments', 'caller', '__watched']))) {
+        proxified[propertyName] = Watch(property, fullpath + "." + propertyName);
     }
 
     return new Proxy(proxified, handler);
