@@ -99,6 +99,38 @@ Object.prototype.inject = function (target = this.getParent(), rewrite = false) 
     target.addAttributes(this.getAttributes(), rewrite)
 }
 
+// Watch and log all object properties access.
+function Watch(proxified, fullpath) {
+    if (typeof __watched !== 'undefined')
+        return proxified;
+    proxified.__watched = true;
+
+    let handler = {
+        get: function(target, name) {
+            if (typeof target[name] !== "function")
+                console.log(`Reading ${fullpath}.${name} -> ${JSON.stringify(target[name])}`);
+            return target[name];
+        },
+        set: function(target, name, value) {
+            console.log(`Writing ${fullpath}.${name} <- ${JSON.stringify(value)}`);
+            target[name] = Watch(value, fullpath + "." + name);
+            return true;
+        },
+        apply: function(target, that, args) {
+            let result = target.apply(that, args);
+            console.log(`Calling ${fullpath}(${args.join(', ')}) -> ${JSON.stringify(result)}`);
+            return Watch(result, `${fullpath}(${args.join(', ')})`);
+        },
+    };
+
+    for (let [propertyName, property] of Object.entries(proxified.getOwnProperties(['length', 'prototype', 'name', 'arguments', 'caller']))) {
+        if (property && typeof property === "object" || typeof property === "function")
+            proxified[propertyName] = Watch(property, fullpath + "." + propertyName);
+    }
+
+    return new Proxy(proxified, handler);
+}
+
 
 /************************************************/
 /*                 Array utils                  */
