@@ -101,7 +101,7 @@ Object.prototype.inject = function (target = this.getParent(), rewrite = false) 
 
 // Watch and log all object properties access.
 function Watch(proxified, fullpath) {
-    if (!(property && typeof property === "object" || typeof property === "function"))
+    if (!(proxified && typeof proxified === "object" || typeof proxified === "function"))
         return proxified;
     if (typeof proxified.__watched !== 'undefined')
         return proxified;
