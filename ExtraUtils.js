@@ -125,7 +125,13 @@ function Watch(proxified, fullpath) {
         },
     };
 
-    for (let [propertyName, property] of Object.entries(proxified.getOwnProperties(['length', 'prototype', 'name', 'arguments', 'caller', '__watched']))) {
+    const excludedProperties = [
+        'length',    'prototype',
+        'name',      'arguments',
+        'caller',    '__watched'
+    ]
+    
+    for (let [propertyName, property] of Object.entries(proxified.getOwnProperties(excludedProperties))) {
         proxified[propertyName] = Watch(property, fullpath + "." + propertyName);
     }
 
